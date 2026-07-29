@@ -16,7 +16,7 @@ reference and comparison, not as an industry-standard or complete benchmark of v
 | System(s) evaluated | Curify only | Curify only — production baseline vs. a candidate branch |
 | Cross-platform? | No (a separate, unpublished 12-query pilot has screenshots only, no scores) | No |
 | Judging | Single-pass LLM (Claude) relevance label | LLM judge (`gpt-4o-mini`), PASS/PARTIAL/FAIL/UNJUDGABLE |
-| Human review | Planned, never completed (0/68) | Partial spot-check (314/326), separate from the main evaluation |
+| Human review | Not included in this public release | Not included in this public release |
 | Labels | `PASS` / `WARN` / `FAIL` | `PASS` / `PARTIAL` / `FAIL` / `UNJUDGABLE` |
 
 **The two benchmarks are intentionally not merged into one schema** — different query sets,
@@ -37,7 +37,6 @@ data/
     README.md
     queries.csv                      326 queries with stable IDs (V001-V326)
     evaluations.csv                  production-baseline + candidate run results (652 rows)
-    human_spot_check.csv             single-reviewer spot-check vs. the candidate run
     schema.json
     provenance.json
 scripts/

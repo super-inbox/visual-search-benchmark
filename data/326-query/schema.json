@@ -37,15 +37,5 @@
       {"name": "irrelevant_count", "type": "integer", "required": false, "allowed_values": null, "description": "Number of top-5 results judged irrelevant.", "source_or_derived": "source"},
       {"name": "top5_titles", "type": "string", "required": false, "allowed_values": null, "description": "JSON-array-formatted string of the top 5 result titles.", "source_or_derived": "source"}
     ]
-  },
-  "human_spot_check.csv": {
-    "row_count": 326,
-    "fields": [
-      {"name": "query_id", "type": "string", "required": true, "allowed_values": null, "description": "Foreign key to queries.csv query_id.", "source_or_derived": "derived"},
-      {"name": "query", "type": "string", "required": true, "allowed_values": null, "description": "The literal search query text.", "source_or_derived": "source"},
-      {"name": "human_verdict", "type": "string", "required": false, "allowed_values": ["PASS", "PARTIAL", "FAIL", "UNJUDGABLE", "PASS?", "PASS？", "PARTIAL?", ""], "description": "A single reviewer's verdict for this query, recorded against the candidate_2026-07-22_0e794cd9 run. Preserved exactly as written, including non-standard uncertainty markers ('PASS?', a full-width variant, and 'PARTIAL?'). Empty string = not reviewed (12 of 326 rows).", "source_or_derived": "source"},
-      {"name": "automated_relevance_label_reference", "type": "string", "required": false, "allowed_values": ["PASS", "PARTIAL", "FAIL", "UNJUDGABLE"], "description": "The automated relevance_label from the candidate_2026-07-22_0e794cd9 run, copied alongside the human verdict for direct comparison.", "source_or_derived": "source"},
-      {"name": "note", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) reviewer observation. Only present on 3 of 326 rows in the source; these are general observations, not per-query notes.", "source_or_derived": "source"}
-    ]
   }
 }

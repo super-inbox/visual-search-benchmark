@@ -72,11 +72,10 @@ top-5 titles) was captured. This is real search-engine output, not a synthetic r
   were zero judgeable labels.
 - `zero_result` — `total_results === 0`. `low_result` — `0 < total_results < 5`.
 
-**Human spot-check (`human_spot_check.csv`):** a single reviewer separately recorded a verdict for
-314 of the 326 queries against the candidate run's automated label, for disagreement-spotting.
-This is a lightweight audit layer, not a full independent re-scoring (it carries no result counts
-or top-result evidence of its own). Values are preserved exactly as recorded, including
-non-standard uncertainty markers (`PASS?`, `PASS？`, `PARTIAL?`).
+**Human review status:** an internal human-verification pass exists over this query set, separate
+from the LLM-judge evaluation above. **It is not included in this public release** — no human
+verdicts, counts, or related file are published here. `relevance_label`/`relevance_score` in
+`evaluations.csv` are LLM-judge output only.
 
 ## Why the two benchmarks are not merged
 

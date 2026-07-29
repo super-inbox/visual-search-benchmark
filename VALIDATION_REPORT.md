@@ -23,7 +23,6 @@ data/68-query/provenance.json
 data/326-query/README.md
 data/326-query/queries.csv
 data/326-query/evaluations.csv
-data/326-query/human_spot_check.csv
 data/326-query/schema.json
 data/326-query/provenance.json
 ```
@@ -36,7 +35,6 @@ data/326-query/provenance.json
 | `data/68-query/automated_relevance_labels.csv` | `c71a1617afbfe4e4ea78978b61dee82c1487717d8d27d3f8af3a350937d4ab98` | `curify_search_auto_collect_with_claude_relevance_2026-07-07.csv` | `a1a7381927f13b6592e3bcd60eeb49c3da9642be878096b5f833083bf884d897` |
 | `data/326-query/queries.csv` | `d8ae0f4ef77567b4dcf8f15635b11c140810c3b991a8134a99997e11ad6a1d9e` | `easy_query_bank_v2_2026-07-16.csv` (+ `easy_query_v2_input_with_ids.csv`) | `c5b1368e33ab601884ad91aff21802c64391bee781b6daa2f3ef50e4d54a08c6` / `f51bd68e2139cfcca72a5235df6140b75e57c86574353ccf319645de7c13fa7a` |
 | `data/326-query/evaluations.csv` | `99a658808166988dcd775b4ff5ce82e8f190b43445bbb0848029cc1f14606c4c` | `BASELINE_EASY326.csv` (+ `03_FULL326_LATEST_RESULTS.csv`) | `0b8d15173c5a86a683c5d1e84a93c13fc5fcc75b4e2ffc4e44565a6a1af3d9fa` / `08c1b6a5e89c94066f37715d90f49e25ed19a6a017eb0e53c2c9fbdebc24c4eb` |
-| `data/326-query/human_spot_check.csv` | `ec3186cbd122dd4bd8e11096cbaba8088f774883ccd5afb9fd96cb96a786c3eb` | `326人工核验.xlsx` | `9a18b052e3b64ad4c350cd5c7c7d91c56ecf327413f0f112a5dc2751d3643fdd` |
 
 All public-file hashes above were recomputed at report time and match the values recorded in each
 dataset's `provenance.json` — confirmed automatically by `scripts/validate_data.py`.
@@ -60,9 +58,6 @@ Scenario: creative_merch 82 / brand_business 82 / marketing_ecommerce 82 / educa
 | production_baseline_2026-07-21 | 24 | 83 | 207 | 12 | 23 | 19 |
 | candidate_2026-07-22_0e794cd9 | 38 | 86 | 195 | 7 | 20 | 18 |
 
-**326-query human spot-check** (`human_verdict`): FAIL 160, PARTIAL 64, PASS 48, PARTIAL? 30,
-UNJUDGABLE 6, PASS？ 3, PASS? 3, blank (not reviewed) 12. Total reviewed: 314/326.
-
 ## Duplicate / missing-value checks
 
 No duplicate `query_id` in any file. No duplicate normalized query text in any query list. No
@@ -72,9 +67,8 @@ empty query text anywhere. All checks executed by `scripts/validate_data.py`.
 
 - 68-query: all 68 `automated_relevance_labels.csv` rows join to a `queries.csv` query_id; no
   unexpected or missing IDs.
-- 326-query: both `evaluations.csv` run variants (326 rows each, 652 total) and
-  `human_spot_check.csv` (326 rows) join fully to `queries.csv` query_id; no unexpected or missing
-  IDs.
+- 326-query: both `evaluations.csv` run variants (326 rows each, 652 total) join fully to
+  `queries.csv` query_id; no unexpected or missing IDs.
 
 ## Sensitive-data scan
 
@@ -114,25 +108,25 @@ records matched their source rows exactly on query text, and on every evaluation
 
 **326-query** (index = row position in the query bank, 0-based):
 
-| idx | query_id | query | lang | scenario | baseline | candidate | human | match |
-|---|---|---|---|---|---|---|---|---|
-| 0 | V001 | 玩具 | zh | creative_merch | FAIL | PARTIAL | FAIL | OK |
-| 35 | V036 | phone case | en | creative_merch | FAIL | FAIL | PASS？ | OK |
-| 70 | V071 | 动漫周边 | zh | creative_merch | PASS | PASS | PARTIAL? | OK |
-| 105 | V106 | tea package | en | brand_business | FAIL | FAIL | PARTIAL? | OK |
-| 140 | V141 | 蜡烛标签 | zh | brand_business | FAIL | UNJUDGABLE | FAIL | OK |
-| 162 | V163 | 月饼礼盒 | zh | brand_business | FAIL | FAIL | FAIL | OK |
-| 163 | V164 | mooncake gift box | en | brand_business | FAIL | FAIL | FAIL | OK |
-| 200 | V201 | 节日促销横幅 | zh | marketing_ecommerce | PARTIAL | PARTIAL | PARTIAL? | OK |
-| 250 | V251 | 字母卡 | zh | education | UNJUDGABLE | PASS | PASS | OK |
-| 325 | V326 | reward chart | en | education | FAIL | FAIL | FAIL | OK |
+| idx | query_id | query | lang | scenario | baseline | candidate | match |
+|---|---|---|---|---|---|---|---|
+| 0 | V001 | 玩具 | zh | creative_merch | FAIL | PARTIAL | OK |
+| 35 | V036 | phone case | en | creative_merch | FAIL | FAIL | OK |
+| 70 | V071 | 动漫周边 | zh | creative_merch | PASS | PASS | OK |
+| 105 | V106 | tea package | en | brand_business | FAIL | FAIL | OK |
+| 140 | V141 | 蜡烛标签 | zh | brand_business | FAIL | UNJUDGABLE | OK |
+| 162 | V163 | 月饼礼盒 | zh | brand_business | FAIL | FAIL | OK |
+| 163 | V164 | mooncake gift box | en | brand_business | FAIL | FAIL | OK |
+| 200 | V201 | 节日促销横幅 | zh | marketing_ecommerce | PARTIAL | PARTIAL | OK |
+| 250 | V251 | 字母卡 | zh | education | UNJUDGABLE | PASS | OK |
+| 325 | V326 | reward chart | en | education | FAIL | FAIL | OK |
 
 ## Known limitations
 
 See each dataset's `README.md` and `provenance.json`, and the root `METHODOLOGY.md`. In summary:
 neither benchmark is cross-platform; the 68-query set has no completed human review; the
-326-query set's candidate branch was not approved for production at capture time; and the human
-spot-check for the 326-query set covers 314 of 326 rows.
+326-query set's candidate branch was not approved for production at capture time; and human-review
+data is not included in this public release for either dataset.
 
 ## Overall result
 

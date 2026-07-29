@@ -118,7 +118,6 @@ REQUIRED_FILES = [
     "data/326-query/README.md",
     "data/326-query/queries.csv",
     "data/326-query/evaluations.csv",
-    "data/326-query/human_spot_check.csv",
     "data/326-query/schema.json",
     "data/326-query/provenance.json",
 ]
@@ -255,10 +254,8 @@ def main():
     # ---------------- 326-query ----------------
     q326 = check_query_file("data/326-query/queries.csv", 326)
     evals326 = check_csv_parses("data/326-query/evaluations.csv")
-    human326 = check_csv_parses("data/326-query/human_spot_check.csv")
     check_schema_matches_headers("data/326-query/schema.json", "data/326-query/queries.csv", "queries.csv")
     check_schema_matches_headers("data/326-query/schema.json", "data/326-query/evaluations.csv", "evaluations.csv")
-    check_schema_matches_headers("data/326-query/schema.json", "data/326-query/human_spot_check.csv", "human_spot_check.csv")
     check_provenance_hashes("data/326-query/provenance.json", "data/326-query")
 
     if q326 is not None:
@@ -316,18 +313,6 @@ def main():
                 exp_z, exp_l = expected_zero_low[variant]
                 if (zc, lc) != (exp_z, exp_l):
                     fail(f"data/326-query/evaluations.csv: run_variant {variant} zero_result/low_result counts ({zc},{lc}) do not match expected ({exp_z},{exp_l})")
-
-    if q326 is not None and human326 is not None:
-        query_ids_326 = {r["query_id"] for r in q326}
-        if len(human326) != 326:
-            fail(f"data/326-query/human_spot_check.csv: expected 326 rows, found {len(human326)}")
-        unknown = {r["query_id"] for r in human326} - query_ids_326
-        if unknown:
-            fail(f"data/326-query/human_spot_check.csv: unexpected query_id(s): {list(unknown)[:5]}")
-        allowed_human = {"PASS", "PARTIAL", "FAIL", "UNJUDGABLE", "PASS?", "PASS？", "PARTIAL?", ""}
-        bad = {r["human_verdict"] for r in human326} - allowed_human
-        if bad:
-            fail(f"data/326-query/human_spot_check.csv: unsupported human_verdict value(s): {bad}")
 
     print("=" * 70)
     print("VALIDATION REPORT")

@@ -76,11 +76,9 @@ code states superseded by the 2026-07-22 fix, and were not selected.
 `PASS`, `PARTIAL`, `FAIL`, `UNJUDGABLE`. `UNJUDGABLE` is a real, sometimes-nonzero value (not
 invented) — confirmed nonzero in the runs selected here (12 in the baseline, 7 in the candidate).
 
-**Human layer.** `docs/daily_report/7.23/326人工核验.xlsx` (SHA-256
-`9a18b052e3b64ad4c350cd5c7c7d91c56ecf327413f0f112a5dc2751d3643fdd`) contains a genuine
-single-reviewer human verdict for 314 of 326 queries, laid directly against the 2026-07-22
-candidate run's automated label (confirmed: the automated-label column in this spreadsheet
-reproduces the exact label distribution of the 2026-07-22 run). Included as `human_spot_check.csv`.
+**Human layer.** An internal human-verification spreadsheet exists over this query set, laid
+against the 2026-07-22 candidate run's automated label. It is **not included in this public
+release**; no counts, verdicts, or file hash from it are published here.
 
 ## Sensitive-data findings and handling
 
@@ -92,10 +90,11 @@ reproduces the exact label distribution of the 2026-07-22 run). Included as `hum
   above) was found to contain local absolute filesystem paths and internal dev-server loop-back
   addresses in its raw observation files. That dataset is not part of either published benchmark
   and was not copied.
-- All four CSV files actually copied into this release (`gold_query_test_set`,
+- All CSV files actually copied into this release (`gold_query_test_set`,
   `curify_search_auto_collect_with_claude_relevance`, `easy_query_bank_v2`,
-  `easy_query_v2_input_with_ids`) plus the two 326-query evaluation CSVs and the human-verification
-  spreadsheet were individually scanned for local paths, internal loop-back references,
-  credential-shaped strings, and internal-only URLs. No genuine matches were found (one incidental
-  regex hit on the substring `sk-` inside the public Curify template slug `elon-musk-tech-meme`
-  was reviewed and is not a credential).
+  `easy_query_v2_input_with_ids`, and the two 326-query evaluation CSVs) were individually scanned
+  for local paths, internal loop-back references, credential-shaped strings, and internal-only
+  URLs. No genuine matches were found (one incidental regex hit on the substring `sk-` inside the
+  public Curify template slug `elon-musk-tech-meme` was reviewed and is not a credential). The
+  internal human-verification spreadsheet was scanned as part of the source audit but is not
+  copied into this public release.
