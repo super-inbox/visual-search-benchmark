@@ -1,84 +1,85 @@
 # Visual Search Benchmark
 
-A public, human-scored benchmark for **visual-design search & discovery** — how well different
-surfaces answer real design/merch/education queries. Built and maintained by
-[Curify](https://curify-ai.com).
+Two curated internal evaluation datasets from [Curify](https://curify-ai.com), converted for public
+release: a 68-query gold set evaluating Curify's own search relevance, and a 326-query regression
+benchmark comparing two states of Curify's search-relevance pipeline. Intended for reproducible
+reference and comparison, not as an industry-standard or complete benchmark of visual/design search.
 
-> **Status:** scaffold — data drop pending. Methodology below is final; the scored data
-> (v1 = 68 queries, v2 = 326 queries) lands in [`data/`](data/).
+> **Status:** data published, `v1.0.0`. See [`METHODOLOGY.md`](METHODOLOGY.md) for how each
+> benchmark was built, and [`SOURCE_AUDIT.md`](SOURCE_AUDIT.md) for source provenance and hashes.
 
-## What this measures
+## Benchmarks at a glance
 
-For each query, the top results from several surfaces are scored by human reviewers on three
-dimensions. The point is **not** to rank-correlate against any single site, but to measure
-*where each surface actually wins*.
-
-**Surfaces compared** (top-N results per query):
-
-| Surface | Source |
-|---|---|
-| Curify | `/search?q=<query>` — top-20 inspirations |
-| Pinterest | top pins |
-| Bing Images | top results |
-| Google Images | top results |
-| Canva | template search |
-
-**Scoring dimensions** (0–5 each, per surface, per query):
-
-| Dimension | Question |
-|---|---|
-| **Relevance** | Does each result look like what the user asked for? |
-| **Diversity** | Are results visually / topically varied, or all the same? |
-| **Actionability** | Can the user *do* something with it — copy, remix, generate, edit? |
-
-Per query → a 5×3 score matrix (15 numbers). Aggregated across query buckets to surface
-category leaders. First pass is **manual** (1–2 reviewers); a rubric / LLM-rater is trained
-once ~30 queries are scored, for scale.
-
-## Versions
-
-| Version | Queries | Notes |
+| | 68-query | 326-query |
 |---|---|---|
-| **v1** | 68 | first scored set |
-| **v2** | 326 | expanded set (superset direction) |
+| Queries | 68, hand-curated | 326 (163 zh / 163 en) |
+| System(s) evaluated | Curify only | Curify only — production baseline vs. a candidate branch |
+| Cross-platform? | No (a separate, unpublished 12-query pilot has screenshots only, no scores) | No |
+| Judging | Single-pass LLM (Claude) relevance label | LLM judge (`gpt-4o-mini`), PASS/PARTIAL/FAIL/UNJUDGABLE |
+| Human review | Planned, never completed (0/68) | Partial spot-check (314/326), separate from the main evaluation |
+| Labels | `PASS` / `WARN` / `FAIL` | `PASS` / `PARTIAL` / `FAIL` / `UNJUDGABLE` |
 
-Each version is a tagged release; the CSVs are versioned so a citation always resolves to a
-fixed snapshot.
+**The two benchmarks are intentionally not merged into one schema** — different query sets,
+different systems under test, different label vocabularies. See [`METHODOLOGY.md`](METHODOLOGY.md)
+for why, and each dataset's own `data/*/README.md` for details.
 
-## Data format (`data/`)
+## Directory structure
 
-`queries.csv`
 ```
-query_id,query,bucket
-q001,brazil world cup poster,sports-poster
-...
+data/
+  68-query/
+    README.md                        per-dataset documentation
+    queries.csv                      68 curated queries + curation metadata
+    automated_relevance_labels.csv   Curify search collection + LLM relevance label
+    schema.json                      field definitions
+    provenance.json                  source hashes and transformation notes
+  326-query/
+    README.md
+    queries.csv                      326 queries with stable IDs (V001-V326)
+    evaluations.csv                  production-baseline + candidate run results (652 rows)
+    human_spot_check.csv             single-reviewer spot-check vs. the candidate run
+    schema.json
+    provenance.json
+scripts/
+  validate_data.py                  integrity + schema validator (see below)
+METHODOLOGY.md                       full methodology for both benchmarks
+SOURCE_AUDIT.md                      source selection evidence and hashes
+VALIDATION_REPORT.md                 result of the validation/QA pass for this release
 ```
 
-`scores.csv`
-```
-query_id,surface,relevance,diversity,actionability,reviewer,notes
-q001,curify,5,4,5,baobao,
-q001,pinterest,4,5,2,baobao,
-...
-```
-
-> Field names are a proposal — align to Baobao's actual export; keep it CSV/JSONL + a fixed schema.
-
-## Use
+## Quick start
 
 ```python
 import pandas as pd
-q = pd.read_csv("data/queries.csv")
-s = pd.read_csv("data/scores.csv")
-# mean actionability by surface:
-s.groupby("surface")["actionability"].mean()
+
+q68 = pd.read_csv("data/68-query/queries.csv")
+labels68 = pd.read_csv("data/68-query/automated_relevance_labels.csv")
+
+q326 = pd.read_csv("data/326-query/queries.csv")
+evals326 = pd.read_csv("data/326-query/evaluations.csv")
+evals326.groupby("run_variant")["relevance_label"].value_counts()
 ```
 
-## Links
+## Validation
 
-- Research page & findings: https://curify-ai.com/resources/visual-search-benchmark
-- Hugging Face dataset (mirror): `curify/visual-search-benchmark`
-- Catalog: `curify-datasets`
+```
+python3 scripts/validate_data.py
+```
+
+Checks file structure, encoding, duplicate/empty queries, referential integrity between queries
+and evaluation rows, label-vocabulary conformance, provenance-hash consistency, and scans for
+accidentally-included local paths or secrets. See [`VALIDATION_REPORT.md`](VALIDATION_REPORT.md)
+for the result recorded at release time.
+
+## Limitations
+
+- Neither benchmark is a cross-platform comparison of Curify against other search or design
+  platforms, despite earlier internal planning documents proposing one — see `METHODOLOGY.md`.
+- Relevance labels in both benchmarks are primarily LLM-judge output, not human review. Read each
+  dataset's README for exactly how much (if any) human verification exists.
+- The 326-query candidate branch evaluated here was explicitly not approved for production at the
+  time of capture; treat it as a regression-testing snapshot.
+- Both are point-in-time snapshots; results will differ from current production Curify search.
 
 ## License
 
@@ -86,10 +87,7 @@ Data: **CC BY 4.0** (see [`LICENSE`](LICENSE)) — free to use with attribution.
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff), or:
-
-> Curify (2026). *Visual Search Benchmark: human-scored visual-design search evaluation.*
-> https://curify-ai.com/resources/visual-search-benchmark
+See [`CITATION.cff`](CITATION.cff).
 
 ## About Curify
 

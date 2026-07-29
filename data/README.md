@@ -1,6 +1,10 @@
 # data/
 
-Scored benchmark data goes here (see the schema in the repo README).
-Drop the exported CSV/JSONL files here, then commit + tag a version.
+Two benchmark datasets, each self-contained with its own README, schema, and provenance record.
+Their schemas differ intentionally — see [`../METHODOLOGY.md`](../METHODOLOGY.md) for why.
 
-_Empty scaffold as of 2026-07-29 — awaiting data drop._
+- [`68-query/`](68-query/README.md) — Curify search relevance over 68 curated gold queries.
+- [`326-query/`](326-query/README.md) — Curify search-relevance regression benchmark (production
+  baseline vs. a candidate branch) over 326 queries.
+
+Validate both with `python3 ../scripts/validate_data.py` from the repository root.
