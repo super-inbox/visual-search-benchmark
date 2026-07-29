@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-title: "AI Design Benchmark"
+title: "Visual Search Benchmark"
 message: "If you use this benchmark, please cite it."
 type: dataset
 authors:
   - name: "Curify"
-url: "https://curify-ai.com/resources/ai-design-benchmark"
-repository-code: "https://github.com/super-inbox/ai-design-benchmark"
+url: "https://curify-ai.com/resources/visual-search-benchmark"
+repository-code: "https://github.com/super-inbox/visual-search-benchmark"
 license: CC-BY-4.0
 date-released: "2026-07-29"

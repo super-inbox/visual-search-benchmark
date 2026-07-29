@@ -1,4 +1,4 @@
-# AI Design Benchmark
+# Visual Search Benchmark
 
 A public, human-scored benchmark for **visual-design search & discovery** — how well different
 surfaces answer real design/merch/education queries. Built and maintained by
@@ -76,8 +76,8 @@ s.groupby("surface")["actionability"].mean()
 
 ## Links
 
-- Research page & findings: https://curify-ai.com/resources/ai-design-benchmark
-- Hugging Face dataset (mirror): `curify/ai-design-benchmark`
+- Research page & findings: https://curify-ai.com/resources/visual-search-benchmark
+- Hugging Face dataset (mirror): `curify/visual-search-benchmark`
 - Catalog: `curify-datasets`
 
 ## License
@@ -88,8 +88,8 @@ Data: **CC BY 4.0** (see [`LICENSE`](LICENSE)) — free to use with attribution.
 
 See [`CITATION.cff`](CITATION.cff), or:
 
-> Curify (2026). *AI Design Benchmark: human-scored visual-design search evaluation.*
-> https://curify-ai.com/resources/ai-design-benchmark
+> Curify (2026). *Visual Search Benchmark: human-scored visual-design search evaluation.*
+> https://curify-ai.com/resources/visual-search-benchmark
 
 ## About Curify
 
