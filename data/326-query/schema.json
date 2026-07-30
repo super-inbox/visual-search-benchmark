@@ -1,0 +1,41 @@
+{
+  "queries.csv": {
+    "row_count": 326,
+    "fields": [
+      {"name": "query_id", "type": "string", "required": true, "allowed_values": null, "description": "Stable query ID (V001-V326) preserved from the authoritative source ID file.", "source_or_derived": "source"},
+      {"name": "query", "type": "string", "required": true, "allowed_values": null, "description": "The literal search query text, in its original language (Chinese or English). Not translated or altered.", "source_or_derived": "source"},
+      {"name": "language", "type": "string", "required": true, "allowed_values": ["zh", "en"], "description": "Language of the query (163 zh / 163 en).", "source_or_derived": "source"},
+      {"name": "scenario", "type": "string", "required": true, "allowed_values": ["creative_merch", "brand_business", "marketing_ecommerce", "education"], "description": "One of four use-case scenarios the query bank was designed around.", "source_or_derived": "source"},
+      {"name": "category", "type": "string", "required": true, "allowed_values": null, "description": "Fine-grained category within the scenario (e.g. toy, figure).", "source_or_derived": "source"},
+      {"name": "reason", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) rationale for why this query was included in the bank.", "source_or_derived": "source"}
+    ]
+  },
+  "evaluations.csv": {
+    "row_count": 652,
+    "row_count_note": "326 queries x 2 run variants (production_baseline_2026-07-21, candidate_2026-07-22_0e794cd9)",
+    "fields": [
+      {"name": "query_id", "type": "string", "required": true, "allowed_values": null, "description": "Foreign key to queries.csv query_id.", "source_or_derived": "derived"},
+      {"name": "query", "type": "string", "required": true, "allowed_values": null, "description": "The literal search query text (redundant with queries.csv, kept for standalone readability).", "source_or_derived": "source"},
+      {"name": "run_variant", "type": "string", "required": true, "allowed_values": ["production_baseline_2026-07-21", "candidate_2026-07-22_0e794cd9"], "description": "Which Curify code state this row's results came from. See provenance.json / METHODOLOGY.md for exact commit SHAs.", "source_or_derived": "derived"},
+      {"name": "ok", "type": "boolean", "required": true, "allowed_values": ["true", "false"], "description": "Whether the search request completed without a collection error.", "source_or_derived": "source"},
+      {"name": "http_status", "type": "integer", "required": false, "allowed_values": null, "description": "HTTP status code of the search request.", "source_or_derived": "source"},
+      {"name": "total_results", "type": "integer", "required": true, "allowed_values": null, "description": "Total result count returned (inspirations + matched templates + gallery prompts).", "source_or_derived": "source"},
+      {"name": "inspiration_count", "type": "integer", "required": false, "allowed_values": null, "description": "Count of inspiration-type results.", "source_or_derived": "source"},
+      {"name": "matched_template_count", "type": "integer", "required": false, "allowed_values": null, "description": "Count of matched-template-type results.", "source_or_derived": "source"},
+      {"name": "gallery_prompt_count", "type": "integer", "required": false, "allowed_values": null, "description": "Count of gallery-prompt-type results.", "source_or_derived": "source"},
+      {"name": "zero_result", "type": "boolean", "required": true, "allowed_values": ["true", "false"], "description": "True when total_results == 0 (per source definition: 'totalResults === 0').", "source_or_derived": "source"},
+      {"name": "low_result", "type": "boolean", "required": true, "allowed_values": ["true", "false"], "description": "True when 0 < total_results < 5 (per source definition).", "source_or_derived": "source"},
+      {"name": "rewrite_triggered", "type": "boolean", "required": false, "allowed_values": ["true", "false"], "description": "Whether Curify's query-rewrite logic fired for this query.", "source_or_derived": "source"},
+      {"name": "relevance_label", "type": "string", "required": true, "allowed_values": ["PASS", "PARTIAL", "FAIL", "UNJUDGABLE"], "description": "LLM-judge (gpt-4o-mini, temperature 0) relevance label. Not a human judgment - see METHODOLOGY.md for the exact pass/fail/partial/unjudgable rubric.", "source_or_derived": "source"},
+      {"name": "relevance_score", "type": "integer", "required": false, "allowed_values": null, "description": "Numeric relevance score (0-100 scale as coded in the source judge rubric) underlying the relevance_label.", "source_or_derived": "source"},
+      {"name": "primary_failure_reason", "type": "string", "required": false, "allowed_values": null, "description": "LLM-judge's stated primary reason for a non-PASS label, when applicable.", "source_or_derived": "source"},
+      {"name": "semantic_drift", "type": "string", "required": false, "allowed_values": null, "description": "LLM-judge's assessment of semantic drift from the original query intent (e.g. MINOR, SEVERE).", "source_or_derived": "source"},
+      {"name": "original_intent_preserved", "type": "string", "required": false, "allowed_values": null, "description": "LLM-judge's assessment of whether the original query intent was preserved (e.g. YES, PARTIALLY, NO).", "source_or_derived": "source"},
+      {"name": "judgeable_count", "type": "integer", "required": false, "allowed_values": null, "description": "Number of top-5 results the LLM judge was able to score.", "source_or_derived": "source"},
+      {"name": "relevant_count", "type": "integer", "required": false, "allowed_values": null, "description": "Number of top-5 results judged relevant.", "source_or_derived": "source"},
+      {"name": "partial_count", "type": "integer", "required": false, "allowed_values": null, "description": "Number of top-5 results judged partially relevant.", "source_or_derived": "source"},
+      {"name": "irrelevant_count", "type": "integer", "required": false, "allowed_values": null, "description": "Number of top-5 results judged irrelevant.", "source_or_derived": "source"},
+      {"name": "top5_titles", "type": "string", "required": false, "allowed_values": null, "description": "JSON-array-formatted string of the top 5 result titles.", "source_or_derived": "source"}
+    ]
+  }
+}

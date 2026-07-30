@@ -1,0 +1,43 @@
+{
+  "queries.csv": {
+    "row_count": 68,
+    "fields": [
+      {"name": "query_id", "type": "string", "required": true, "allowed_values": null, "description": "Deterministic stable ID (q001-q068) assigned in the original source file's row order. Not present in the source file; added for public release.", "source_or_derived": "derived"},
+      {"name": "query", "type": "string", "required": true, "allowed_values": null, "description": "The literal search query text, in its original language (English, Chinese, or mixed). Not translated or altered.", "source_or_derived": "source"},
+      {"name": "primary_scene", "type": "string", "required": true, "allowed_values": ["品牌", "营销电商", "教育", "文创"], "description": "Primary use-case scene the query was curated to represent (brand, marketing/e-commerce, education, cultural-creative).", "source_or_derived": "source"},
+      {"name": "secondary_scene", "type": "string", "required": false, "allowed_values": null, "description": "Secondary use-case scene, if applicable.", "source_or_derived": "source"},
+      {"name": "query_style", "type": "string", "required": false, "allowed_values": null, "description": "Free-text descriptor of query style (e.g. 'Pinterest-like', 'Canva-template-like').", "source_or_derived": "source"},
+      {"name": "expected_content_type", "type": "string", "required": false, "allowed_values": null, "description": "Free-text description of the expected result content type.", "source_or_derived": "source"},
+      {"name": "priority", "type": "string", "required": true, "allowed_values": ["P0", "P1", "P2"], "description": "Curation priority tier assigned when the gold set was selected.", "source_or_derived": "source"},
+      {"name": "confidence", "type": "string", "required": true, "allowed_values": ["high", "medium", "low"], "description": "Analyst confidence in the query's selection rationale.", "source_or_derived": "source"},
+      {"name": "keep_or_review", "type": "string", "required": true, "allowed_values": ["keep", "review"], "description": "Whether the query was flagged for further review during curation.", "source_or_derived": "source"},
+      {"name": "planned_test_type", "type": "string", "required": true, "allowed_values": ["content_gap", "recall", "filtering", "both"], "description": "The type of search behavior this query was designed to probe.", "source_or_derived": "source"},
+      {"name": "selected_reason", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) analyst rationale for including this query.", "source_or_derived": "source"},
+      {"name": "likely_recall_challenge", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) hypothesis about recall difficulty for this query.", "source_or_derived": "source"},
+      {"name": "likely_filtering_challenge", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) hypothesis about filtering/precision difficulty for this query.", "source_or_derived": "source"},
+      {"name": "content_gap_hypothesis", "type": "string", "required": false, "allowed_values": null, "description": "Free-text (Chinese) hypothesis about content-catalog gaps for this query.", "source_or_derived": "source"}
+    ]
+  },
+  "automated_relevance_labels.csv": {
+    "row_count": 68,
+    "fields": [
+      {"name": "query_id", "type": "string", "required": true, "allowed_values": null, "description": "Foreign key to queries.csv query_id.", "source_or_derived": "derived"},
+      {"name": "query", "type": "string", "required": true, "allowed_values": null, "description": "The literal search query text (redundant with queries.csv, kept for standalone readability).", "source_or_derived": "source"},
+      {"name": "search_url", "type": "string", "required": true, "allowed_values": null, "description": "The Curify search URL executed for this query.", "source_or_derived": "source"},
+      {"name": "page_loaded", "type": "string", "required": true, "allowed_values": ["yes", "no"], "description": "Whether the search results page loaded successfully during automated collection.", "source_or_derived": "source"},
+      {"name": "login_wall", "type": "string", "required": true, "allowed_values": ["yes", "no"], "description": "Whether a login wall blocked automated collection.", "source_or_derived": "source"},
+      {"name": "visible_result_count", "type": "integer", "required": true, "allowed_values": null, "description": "Number of results visible on the page at collection time.", "source_or_derived": "source"},
+      {"name": "top_10_result_titles", "type": "string", "required": false, "allowed_values": null, "description": "Pipe-delimited titles of the top 10 results.", "source_or_derived": "source"},
+      {"name": "top_10_result_tags_or_labels", "type": "string", "required": false, "allowed_values": null, "description": "Pipe-delimited tags/labels attached to the top 10 results.", "source_or_derived": "source"},
+      {"name": "top_10_result_types", "type": "string", "required": false, "allowed_values": null, "description": "Pipe-delimited content type (e.g. inspiration, template) of the top 10 results.", "source_or_derived": "source"},
+      {"name": "no_result_text", "type": "string", "required": false, "allowed_values": null, "description": "Any 'no results' / 'showing broadened results' message text shown by the search UI.", "source_or_derived": "source"},
+      {"name": "auto_flags", "type": "string", "required": false, "allowed_values": null, "description": "Semicolon-delimited automated flags raised during collection (e.g. query_broadened_by_curify).", "source_or_derived": "source"},
+      {"name": "needs_human_review", "type": "string", "required": false, "allowed_values": ["yes", "no"], "description": "Whether the automated collector flagged this row for human review.", "source_or_derived": "source"},
+      {"name": "claude_relevance_label", "type": "string", "required": true, "allowed_values": ["PASS", "WARN", "FAIL"], "description": "First-pass relevance label generated by an LLM (Claude) reading the automated collection output. This is NOT a human judgment.", "source_or_derived": "source"},
+      {"name": "claude_issue_type", "type": "string", "required": false, "allowed_values": null, "description": "Semicolon-delimited categorical issue tags assigned by the LLM (e.g. bad_relevance, wrong_decomposition, zero_result).", "source_or_derived": "source"},
+      {"name": "claude_relevance_reason", "type": "string", "required": false, "allowed_values": null, "description": "Free-text LLM-generated explanation for the relevance label.", "source_or_derived": "source"},
+      {"name": "claude_confidence", "type": "string", "required": false, "allowed_values": ["high", "medium", "low"], "description": "LLM's self-reported confidence in its own label.", "source_or_derived": "source"},
+      {"name": "recommended_manual_review_priority", "type": "string", "required": false, "allowed_values": ["P0", "P1"], "description": "Priority tier the LLM recommended for a (never-completed) human follow-up review.", "source_or_derived": "source"}
+    ]
+  }
+}
