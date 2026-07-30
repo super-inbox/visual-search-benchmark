@@ -10,10 +10,16 @@ Read this document before comparing numbers across the two folders.
 hand-curated "gold" queries, spanning four scenes (brand, marketing/e-commerce, education,
 cultural-creative).
 
-**What it does NOT measure:** it is not a cross-platform comparison. Only Curify was evaluated
-with structured, per-query data. A separate, smaller pilot captured cross-platform screenshots
-(Curify/Pinterest/Bing/Google/Canva) for 12 of the 68 queries, but that pilot produced only
-free-text AI-generated visual observations, not scores, and its images are not published here.
+**What it does NOT measure:** it is not a full cross-platform comparison. Only Curify was evaluated
+with structured, per-query relevance data across all 68 queries. A separate, smaller pilot captured
+real cross-platform screenshots (Curify/Bing/Google/Canva/Pinterest) for **12 of the 68** queries —
+those 62 images (5 platforms x 12 queries, plus 2 backup captures) **are published** in
+`data/68-query/images/`, with a browsable offline gallery at `data/68-query/gallery/index.html`.
+The pilot produced free-text AI-generated visual observations for the competitor platforms, not
+numeric scores, and only Curify's screenshot carries a formal PASS/WARN/FAIL-style label
+(`visual_curify_label`, cross-checked against `claude_relevance_label`). See
+`docs/68_IMAGE_SOURCE_INVENTORY.md` and `data/68-query/IMAGE_MAPPING_REPORT.md` for exactly what is
+and isn't covered — the other 56 of 68 queries have no image evidence anywhere in the source data.
 
 **Collection process:**
 1. 68 queries were curated from a larger candidate pool (a 58-query seed set expanded to

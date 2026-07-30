@@ -53,7 +53,11 @@ exact rubric (result-rate thresholds, semantic-drift and intent-preservation con
 
 ## Known limitations
 
-- **Not cross-platform.** No Pinterest/Bing/Google/Canva evaluation exists for these 326 queries.
+- **Not cross-platform, and no cross-platform images exist for this query set.** No Pinterest/Bing/
+  Google/Canva evaluation or screenshots exist for these 326 queries — unlike the 68-query benchmark,
+  which now includes real (but partial, 12-of-68) cross-platform screenshot evidence, this dataset
+  has **zero** query-level image evidence of any kind. This release does not add any; no images were
+  collected, generated, or implied for the 326-query set, and none should be assumed.
 - **Not human-reviewed.** `relevance_label`/`relevance_score` are LLM-judge output.
   Human-review data is not included in this public release.
 - **Candidate branch was not production-approved** at time of capture — read as a regression

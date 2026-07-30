@@ -33,9 +33,17 @@ human review (the `human_*` columns were checked and are 100% empty).
 - A cross-platform (Curify/Pinterest/Bing/Google/Canva) automated-collection pilot exists for a
   *different*, 58-query set. It was not used because it is a different query list, and its data is
   automated result/label counts rather than a relevance judgment.
-- A 12-query cross-platform screenshot subset of the 68 exists, but only as images plus free-text
-  AI-generated visual observations (no score), and at least one row's status text was found to be
-  stale relative to its own accompanying notes. Not included in this release.
+- A 12-query cross-platform screenshot subset of the 68 exists, as images plus free-text
+  AI-generated visual observations (no numeric score for the competitor platforms). An early status
+  CSV tracking this subset (`P0_visual_review_with_claude_2026-07-09.csv`) was found to be stale —
+  every one of its 12 rows says competitor screenshots were "not available," even though the
+  per-case `notes.md` files (written later the same day) confirm all screenshots were captured. This
+  asset was excluded from the `v1.0.0` release; **as of this update it is now published** in
+  `data/68-query/images/` (62 files: 12 queries x 5 platforms, plus 2 backup captures for one
+  query), with per-image mapping metadata in `data/68-query/results.jsonl` and a full accounting in
+  `docs/68_IMAGE_SOURCE_INVENTORY.md` and `data/68-query/IMAGE_MAPPING_REPORT.md`. The stale CSV
+  itself was still not used as a data source — the per-case `notes.md` files were used instead. The
+  other 56 of 68 queries have no cross-platform image evidence anywhere in the source repository.
 
 ## 326-query benchmark
 
@@ -98,3 +106,12 @@ release**; no counts, verdicts, or file hash from it are published here.
   public Curify template slug `elon-musk-tech-meme` was reviewed and is not a credential). The
   internal human-verification spreadsheet was scanned as part of the source audit but is not
   copied into this public release.
+- The 62 image files (and their source `notes.md` annotations) copied from
+  `docs/daily_report/7.9/competitor_screenshots/` for the 12-query cross-platform subset were
+  separately re-scanned for local absolute paths, loopback addresses, tokens, and cookies —
+  clean, no matches. One in-source note documents that a red numeric badge visible in a corner of
+  some Curify screenshots is a local Next.js dev-tool overlay (cosmetic, not sensitive); no image
+  was edited to remove it, since editing would violate the "don't modify evidence images" rule.
+  See `docs/68_IMAGE_SOURCE_INVENTORY.md` section 7 for the full account, including why the
+  58-query pilot's local-path leakage does **not** affect this release (that dataset was not
+  copied).
