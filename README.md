@@ -7,7 +7,7 @@ benchmark comparing two states of Curify's search-relevance pipeline. This bench
 real-world creative-search queries with cross-platform visual evidence (where it exists), human/LLM
 relevance judgments, and query-level failure analysis — not just a query list and a final score.
 
-> **Status:** `v1.1.0`. See [`METHODOLOGY.md`](METHODOLOGY.md) for how each benchmark was built,
+> **Status:** `v1.2.0`. See [`METHODOLOGY.md`](METHODOLOGY.md) for how each benchmark was built,
 > [`SOURCE_AUDIT.md`](SOURCE_AUDIT.md) for source provenance and hashes, and
 > [`DATASET_CARD.md`](DATASET_CARD.md) for the structured dataset-card summary.
 
@@ -54,7 +54,7 @@ data at all) rather than smoothing that over.
 |---|---|---|
 | Queries | 68, hand-curated | 326 (163 zh / 163 en) |
 | System(s) evaluated | Curify only | Curify only — production baseline vs. a candidate branch |
-| Cross-platform image evidence | **12 of 68 queries** (Curify/Bing/Google/Canva/Pinterest screenshots, published) | **None** |
+| Cross-platform image evidence | **12 of 68 queries** (Curify/Bing/Google/Canva/Pinterest screenshots, published) | **326 of 326** (Google Images + Curify screenshots, published — unscored evidence, not a new evaluation) |
 | Judging | Single-pass LLM (Claude) relevance label | LLM judge (`gpt-4o-mini`), PASS/PARTIAL/FAIL/UNJUDGABLE |
 | Human review | Not included in this public release | Not included in this public release |
 | Labels | `PASS` / `WARN` / `FAIL` | `PASS` / `PARTIAL` / `FAIL` / `UNJUDGABLE` |
@@ -70,10 +70,12 @@ literal screenshots across five platforms plus a stated reason for each judgment
 human/LLM-audited cross-platform visual search benchmark with actual ranked-page visual evidence
 (where captured).*
 
-**326-query** is the broad-coverage set: no images, but 326 queries across four scenarios in two
-languages, run through two code states of the same search pipeline, for regression/coverage testing.
+**326-query** is the broad-coverage set: 326 queries across four scenarios in two languages, run
+through two code states of the same search pipeline, for regression/coverage testing — plus real
+(unscored) Google Images and Curify screenshot evidence for every one of the 326 queries.
 Positioning: *a broader query-evaluation suite for testing search coverage, retrieval behavior,
-relevance, and regressions.*
+relevance, and regressions, now with visible search-page evidence alongside the scored Curify
+regression comparison.*
 
 Use 68-query when you want to look at *why* something failed on a specific query. Use 326-query
 when you want breadth and a production-vs-candidate regression comparison. Don't expect either to
@@ -84,20 +86,27 @@ substitute for the other — see `METHODOLOGY.md` "Why the two benchmarks are no
 - **68-query, all 68:** Curify only (`curify-ai.com/search`).
 - **68-query, 12-query image subset only:** Curify, Bing Images, Google Images, Canva, Pinterest —
   real screenshots, not simulated or described from memory.
-- **326-query:** Curify only (two code states — see `METHODOLOGY.md`).
+- **326-query, scored evaluation (`evaluations.csv`):** Curify only (two code states — see
+  `METHODOLOGY.md`).
+- **326-query, screenshot evidence (all 326 queries):** Google Images and Curify — real,
+  unscored screenshots, published in `data/326-query/google-images/` and `data/326-query/curify/`.
 
-No platform other than Curify has structured, scored, per-query data anywhere in this release. The
-12-query image subset is screenshots + free-text observations for the four competitor platforms,
-not a scored comparison.
+No platform other than Curify has structured, *scored*, per-query data anywhere in this release.
+The 68-query 12-query image subset is screenshots + free-text observations for the four competitor
+platforms; the 326-query Google Images / Curify screenshots are unscored visual evidence. Neither
+is a scored cross-platform comparison.
 
 ## 7. Data schema
 
 See each dataset's `schema.json` for the authoritative field list:
 [`data/68-query/schema.json`](data/68-query/schema.json),
-[`data/326-query/schema.json`](data/326-query/schema.json). The 68-query image evidence has its own
+[`data/326-query/schema.json`](data/326-query/schema.json) (`queries.csv`/`evaluations.csv` only —
+unchanged by the screenshot-evidence addition below). The 68-query image evidence has its own
 record schema in [`data/68-query/results.jsonl`](data/68-query/results.jsonl) (one JSON object per
 image) — see [`data/68-query/IMAGE_MAPPING_REPORT.md`](data/68-query/IMAGE_MAPPING_REPORT.md) for
-field-by-field completeness.
+field-by-field completeness. The 326-query screenshot evidence's manifest fields are documented in
+[`data/326-query/google-images/README.md`](data/326-query/google-images/README.md) and
+[`data/326-query/curify/README.md`](data/326-query/curify/README.md).
 
 ## 8. Image evidence
 
@@ -112,8 +121,17 @@ for exactly how this evidence was sourced and what's excluded, and
 [`docs/IMAGE_RIGHTS_AND_ATTRIBUTION_REVIEW.md`](docs/IMAGE_RIGHTS_AND_ATTRIBUTION_REVIEW.md) for
 the licensing status of the third-party screenshots (not CC BY 4.0 — see below).
 
-**The 326-query benchmark has no image evidence of any kind, for any of its 326 queries.** No images
-were collected, generated, or implied for it in this release.
+**The 326-query benchmark now has real screenshot evidence for all 326 queries**, on two search
+surfaces: [`data/326-query/google-images/`](data/326-query/google-images/) (326/326, Google
+Images) and [`data/326-query/curify/`](data/326-query/curify/) (326/326, Curify — 319 standard
+search-results pages, 1 genuine zero-result page, and 7 real captures of Curify's own deterministic
+topic-category redirect for certain generic single-word queries, each explicitly tagged
+`page_type=topic_redirect` and never presented as a standard search-results page). Browse them at
+[`data/326-query/google-images/gallery.html`](data/326-query/google-images/gallery.html) and
+[`data/326-query/curify/gallery.html`](data/326-query/curify/gallery.html). **This is unscored
+visual evidence, not a new evaluation** — no relevance judgment, ranking, or score was generated
+for either surface, and `evaluations.csv` (the scored Curify production-vs-candidate comparison)
+was not re-run or altered.
 
 ## 9. Evaluation methodology
 
@@ -141,10 +159,11 @@ also failed, and cases where an initial "content gap" finding was corrected afte
 
 ## 12. Known limitations
 
-- Cross-platform image evidence exists for only 12 of the 68 queries — not all 68, and not at all
-  for the 326-query set. See section 8.
+- 68-query cross-platform image evidence exists for only 12 of the 68 queries, not all 68. See
+  section 8. The 326-query set now has screenshot evidence for all 326 queries (Google Images +
+  Curify), but this is unscored visual evidence, not a relevance evaluation.
 - Neither benchmark is a cross-platform *ranking* comparison; no numeric score exists for any
-  non-Curify platform anywhere in this release.
+  non-Curify platform anywhere in this release — including the 326-query Google Images screenshots.
 - Relevance labels are primarily LLM-judge output, not completed human review, in both benchmarks.
 - The 326-query candidate branch was explicitly not approved for production at the time of capture —
   treat it as a regression-testing snapshot.
@@ -186,6 +205,10 @@ data/
     evaluations.csv                  production-baseline + candidate run results (652 rows)
     schema.json
     provenance.json
+    google-images/                   326 Google Images screenshots + manifest + gallery
+      README.md, manifest.csv, manifest.jsonl, gallery.html, screenshots/
+    curify/                          326 Curify screenshots + manifest + gallery
+      README.md, manifest.csv, manifest.jsonl, failed_queries.csv, gallery.html, screenshots/
 docs/
   68_IMAGE_SOURCE_INVENTORY.md       read-only inventory of the image evidence sourcing
   EXAMPLE_CROSS_PLATFORM_COMPARISONS.md
@@ -216,10 +239,17 @@ image_records = [json.loads(l) for l in open("data/68-query/results.jsonl", enco
 q326 = pd.read_csv("data/326-query/queries.csv")
 evals326 = pd.read_csv("data/326-query/evaluations.csv")
 evals326.groupby("run_variant")["relevance_label"].value_counts()
+
+# 326-query screenshot evidence (326/326 each, unscored)
+google_manifest = pd.read_csv("data/326-query/google-images/manifest.csv")
+curify_manifest = pd.read_csv("data/326-query/curify/manifest.csv")
+curify_manifest["page_type"].value_counts()  # search_results / search_zero_results / topic_redirect
 ```
 
-Or just open [`data/68-query/gallery/index.html`](data/68-query/gallery/index.html) directly in a
-browser — no setup required.
+Or just open [`data/68-query/gallery/index.html`](data/68-query/gallery/index.html),
+[`data/326-query/google-images/gallery.html`](data/326-query/google-images/gallery.html), or
+[`data/326-query/curify/gallery.html`](data/326-query/curify/gallery.html) directly in a browser —
+no setup required.
 
 ### Validation
 

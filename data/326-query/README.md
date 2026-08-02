@@ -23,6 +23,8 @@ for full methodology and [`../../SOURCE_AUDIT.md`](../../SOURCE_AUDIT.md) for so
 | `evaluations.csv` | 652 | Two evaluation runs stacked (`run_variant` column): production baseline and candidate branch. |
 | `schema.json` | — | Field-level schema for both CSVs. |
 | `provenance.json` | — | Source file paths, hashes, and transformation notes. |
+| `google-images/` | 326 screenshots | Real Google Images search-results screenshot evidence, one per query. See [`google-images/README.md`](google-images/README.md). |
+| `curify/` | 326 screenshots | Real Curify search-results screenshot evidence, one per query. See [`curify/README.md`](curify/README.md). |
 
 ## Systems evaluated (`run_variant` in `evaluations.csv`)
 
@@ -51,17 +53,36 @@ exact rubric (result-rate thresholds, semantic-drift and intent-preservation con
 | production_baseline_2026-07-21 | 23 | 19 |
 | candidate_2026-07-22_0e794cd9 | 20 | 18 |
 
+## Screenshot evidence (326/326 Google Images, 326/326 Curify)
+
+As of this update, real, unedited search-results screenshots exist for **all 326 queries** on two
+search surfaces:
+
+- **Google Images** — [`google-images/`](google-images/README.md), 326/326, captured 2026-08-01/02.
+- **Curify** (`curify-ai.com`) — [`curify/`](curify/README.md), 326/326, captured 2026-08-02/03. 319
+  are standard `/search?q=...` results pages; 7 are Curify's own deterministic client-side redirect
+  to a `/topics/...` category page for certain single generic words (e.g. "logo", "map") — captured
+  as real evidence of that actual product behavior, not worked around. See `curify/README.md` for
+  the full list and how each is marked.
+
+**This is screenshot evidence, not a new evaluation.** No relevance judgment, score, or ranking was
+generated for either platform — `evaluations.csv` still scores Curify only (production baseline vs.
+candidate branch, as below) and was not changed or re-run for this update. Do not read the presence
+of Google Images screenshots as a cross-platform relevance comparison; no such comparison exists in
+this release.
+
 ## Known limitations
 
-- **Not cross-platform, and no cross-platform images exist for this query set.** No Pinterest/Bing/
-  Google/Canva evaluation or screenshots exist for these 326 queries — unlike the 68-query benchmark,
-  which now includes real (but partial, 12-of-68) cross-platform screenshot evidence, this dataset
-  has **zero** query-level image evidence of any kind. This release does not add any; no images were
-  collected, generated, or implied for the 326-query set, and none should be assumed.
+- **Not a scored cross-platform comparison.** Real screenshots now exist for Google Images and
+  Curify (see above), but no relevance judgment, ranking, or score was generated for Google Images,
+  and the existing Curify `evaluations.csv` scores were not re-generated from these screenshots. No
+  Pinterest/Bing/Canva evidence of any kind exists for these 326 queries.
 - **Not human-reviewed.** `relevance_label`/`relevance_score` are LLM-judge output.
   Human-review data is not included in this public release.
 - **Candidate branch was not production-approved** at time of capture — read as a regression
   snapshot, not a current-state claim.
+- **Screenshot evidence is a later, separate point-in-time capture** (2026-08-01 to 2026-08-03) than
+  the `evaluations.csv` runs (2026-07-21/22) — the two should not be conflated as the same snapshot.
 
 ## Intended use
 
@@ -72,7 +93,9 @@ balanced (language x scenario) query bank.
 
 Do not use this dataset to claim a cross-platform ranking of Curify vs. other platforms. Do not
 present the candidate run as representative of current production Curify search. Do not present
-`relevance_label`/`relevance_score` as human-reviewed ground truth.
+`relevance_label`/`relevance_score` as human-reviewed ground truth. Do not present the Google
+Images / Curify screenshot evidence (`google-images/`, `curify/`) as a scored or ranked comparison —
+it is unscored visual evidence of what each surface actually returned at capture time, nothing more.
 
 ## Loading example
 

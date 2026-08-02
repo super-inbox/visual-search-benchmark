@@ -120,7 +120,25 @@ REQUIRED_FILES = [
     "data/326-query/evaluations.csv",
     "data/326-query/schema.json",
     "data/326-query/provenance.json",
+    "data/326-query/google-images/README.md",
+    "data/326-query/google-images/manifest.csv",
+    "data/326-query/google-images/manifest.jsonl",
+    "data/326-query/google-images/gallery.html",
+    "data/326-query/curify/README.md",
+    "data/326-query/curify/manifest.csv",
+    "data/326-query/curify/manifest.jsonl",
+    "data/326-query/curify/failed_queries.csv",
+    "data/326-query/curify/gallery.html",
 ]
+
+
+def check_no_human_spot_check():
+    for dirpath, _, filenames in os.walk(ROOT):
+        if ".git" in dirpath.split(os.sep):
+            continue
+        for fn in filenames:
+            if fn == "human_spot_check.csv":
+                fail(f"{os.path.join(dirpath, fn)}: human_spot_check.csv must not be present in this public release")
 
 
 def check_required_files():
@@ -208,6 +226,7 @@ def check_provenance_hashes(provenance_rel, data_dir):
 def main():
     check_required_files()
     check_no_forbidden_files()
+    check_no_human_spot_check()
 
     for rel in REQUIRED_FILES:
         full = os.path.join(ROOT, rel)
@@ -313,6 +332,77 @@ def main():
                 exp_z, exp_l = expected_zero_low[variant]
                 if (zc, lc) != (exp_z, exp_l):
                     fail(f"data/326-query/evaluations.csv: run_variant {variant} zero_result/low_result counts ({zc},{lc}) do not match expected ({exp_z},{exp_l})")
+
+    # ---------------- 326-query screenshot evidence (google-images / curify) ----------------
+    # Note: image decode/dimension/gallery-reference/hash checks live in validate_benchmark.py,
+    # matching the existing 68-query split (this script = CSV/schema/counts, that one = images).
+    if q326 is not None:
+        query_ids_326 = {r["query_id"] for r in q326}
+        for platform, rel_dir, expected_screenshot_col in (
+            ("google-images", "data/326-query/google-images", "screenshot_path"),
+            ("curify", "data/326-query/curify", "screenshot_path"),
+        ):
+            manifest = check_csv_parses(f"{rel_dir}/manifest.csv")
+            jsonl_path = os.path.join(ROOT, rel_dir, "manifest.jsonl")
+            if os.path.isfile(jsonl_path):
+                check_valid_utf8(jsonl_path)
+            jsonl_records = []
+            if os.path.isfile(jsonl_path):
+                with open(jsonl_path, encoding="utf-8") as f:
+                    for i, line in enumerate(f, 1):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            jsonl_records.append(json.loads(line))
+                        except json.JSONDecodeError as e:
+                            fail(f"{rel_dir}/manifest.jsonl:{i}: invalid JSON line ({e})")
+
+            if manifest is None:
+                continue
+            if len(manifest) != 326:
+                fail(f"{rel_dir}/manifest.csv: expected 326 rows, found {len(manifest)}")
+            if len(jsonl_records) != len(manifest):
+                fail(f"{rel_dir}/manifest.jsonl: {len(jsonl_records)} records vs {len(manifest)} in manifest.csv -- must match")
+
+            ids = [r.get("query_id", "") for r in manifest]
+            if len(set(ids)) != len(ids):
+                fail(f"{rel_dir}/manifest.csv: duplicate query_id values found")
+            unknown = set(ids) - query_ids_326
+            if unknown:
+                fail(f"{rel_dir}/manifest.csv: query_id(s) not present in queries.csv: {sorted(unknown)[:5]}")
+            missing = query_ids_326 - set(ids)
+            if missing:
+                fail(f"{rel_dir}/manifest.csv: missing coverage for query_id(s): {sorted(missing)[:5]}")
+
+            paths = [r.get(expected_screenshot_col, "") for r in manifest]
+            if len(set(paths)) != len(paths):
+                fail(f"{rel_dir}/manifest.csv: duplicate {expected_screenshot_col} values found")
+            for r in manifest:
+                p = r.get(expected_screenshot_col, "")
+                if not p:
+                    continue
+                if os.path.isabs(p):
+                    fail(f"{rel_dir}/manifest.csv: {expected_screenshot_col} is a local absolute path (must be repo-relative): {p}")
+                    continue
+                if not os.path.isfile(os.path.join(ROOT, rel_dir, p)):
+                    fail(f"{rel_dir}/manifest.csv: {expected_screenshot_col} does not exist on disk: {p}")
+
+            non_success = [r for r in manifest if r.get("status") != "success"]
+            if non_success:
+                fail(f"{rel_dir}/manifest.csv: expected all 326 rows status=success, found {len(non_success)} non-success row(s): {[r.get('query_id') for r in non_success][:5]}")
+
+            screenshots_dir = os.path.join(ROOT, rel_dir, "screenshots")
+            if os.path.isdir(screenshots_dir):
+                on_disk = {f for f in os.listdir(screenshots_dir) if not f.startswith(".")}
+                referenced = {os.path.basename(p) for p in paths if p}
+                orphans = on_disk - referenced
+                if orphans:
+                    fail(f"{rel_dir}/screenshots/: {len(orphans)} file(s) present but not referenced by manifest.csv (orphan screenshots): {sorted(orphans)[:5]}")
+
+        failed_curify = check_csv_parses("data/326-query/curify/failed_queries.csv")
+        if failed_curify is not None and len(failed_curify) != 0:
+            fail(f"data/326-query/curify/failed_queries.csv: expected 0 data rows (header only), found {len(failed_curify)}")
 
     print("=" * 70)
     print("VALIDATION REPORT")

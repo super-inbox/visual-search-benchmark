@@ -2,8 +2,12 @@
 """Extended validator for the Visual Search Benchmark public release.
 
 Covers what scripts/validate_data.py does not: the 68-query image evidence
-(results.jsonl, image_manifest.json, images/, gallery/) plus repo-wide checks
-for external references, local absolute paths, and secret-shaped strings.
+(results.jsonl, image_manifest.json, images/, gallery/), the 326-query
+Google Images + Curify screenshot evidence (data/326-query/google-images/,
+data/326-query/curify/ -- image decode/format/dimension checks and gallery
+reference checks; row-count/referential-integrity checks for those two
+manifests live in validate_data.py), plus repo-wide checks for external
+references, local absolute paths, and secret-shaped strings.
 
 Runs with: python3 scripts/validate_benchmark.py
 Exit code 0 only if every mandatory check passes. Standard library only
@@ -281,29 +285,98 @@ def check_gallery_html():
     scan_text_for_sensitive(gallery_path, html)
 
 
-def check_326_no_image_claims():
-    """326-query must not reference any image/gallery/screenshot files that don't exist,
-    and must not have any images/ directory at all (per explicit scope constraint)."""
-    images_dir = os.path.join(DATA326, "images")
-    if os.path.isdir(images_dir):
-        fail("data/326-query/images/ exists -- 326-query must not have cross-platform images in this release")
+def check_326query_images():
+    """326-query screenshot evidence: google-images/ and curify/, each 326 real screenshots.
 
-    # Only documentation/schema files are checked for image-file *claims* -- raw evaluation data
-    # (queries.csv, evaluations.csv) legitimately contains arbitrary scraped result-title text that
-    # can incidentally contain "*.jpg"-shaped substrings (e.g. a page title referencing an unrelated
-    # photo filename); that is not this benchmark claiming to have that image.
-    for fn in ("schema.json", "provenance.json", "README.md"):
-        full = os.path.join(DATA326, fn)
-        if not os.path.isfile(full):
+    Added 2026-08-03. Row-count/referential-integrity/duplicate/orphan checks for the two
+    manifests live in scripts/validate_data.py (matching that script's CSV/schema focus); this
+    function does the image-specific work: decodability, actual-format-vs-extension match,
+    dimension recording, and gallery HTML reference/external-script checks -- the same class of
+    check check_68query_images()/check_gallery_html() do for the 68-query image set above.
+    """
+    for platform, rel_dir, expected_dims in (
+        ("google-images", os.path.join(DATA326, "google-images"), (1440, 1000)),
+        ("curify", os.path.join(DATA326, "curify"), (1440, 900)),
+    ):
+        manifest_path = os.path.join(rel_dir, "manifest.csv")
+        gallery_path = os.path.join(rel_dir, "gallery.html")
+        if not os.path.isfile(manifest_path):
+            fail(f"data/326-query/{platform}/manifest.csv: missing")
             continue
-        with open(full, encoding="utf-8", errors="replace") as f:
-            text = f.read()
-        for m in re.finditer(r'([^\s"\'()]+\.(?:png|jpg|jpeg|gif|webp))', text, re.IGNORECASE):
-            ref = m.group(1)
-            resolved = os.path.normpath(os.path.join(DATA326, ref))
+
+        with open(manifest_path, encoding="utf-8") as f:
+            manifest_rows = list(csv.DictReader(f))
+
+        decoded = 0
+        broken = 0
+        wrong_format = 0
+        wrong_dims = 0
+        dim_counts = {}
+        for r in manifest_rows:
+            p = r.get("screenshot_path")
+            if not p or os.path.isabs(p):
+                continue
+            full = os.path.join(rel_dir, p)
+            if not os.path.isfile(full):
+                continue  # already reported as missing by validate_data.py
+            try:
+                from PIL import Image
+                with Image.open(full) as im:
+                    im.verify()
+                with Image.open(full) as im:
+                    im.load()
+                    fmt = im.format
+                    size = im.size
+                decoded += 1
+                if fmt != "JPEG":
+                    wrong_format += 1
+                    fail(f"data/326-query/{platform}/{p}: actual format is {fmt}, not JPEG "
+                         f"(filename has a .jpg-shaped extension, so the real format must match)")
+                if size != expected_dims:
+                    wrong_dims += 1
+                    fail(f"data/326-query/{platform}/{p}: dimensions {size} do not match expected "
+                         f"{expected_dims}")
+                dim_counts[size] = dim_counts.get(size, 0) + 1
+            except ImportError:
+                pass  # Pillow not installed -- skip decode/format/dim checks, same fallback as 68-query
+            except Exception as e:
+                broken += 1
+                fail(f"data/326-query/{platform}/{p}: image failed to decode ({e})")
+
+        stats[f"326query_{platform.replace('-', '_')}_decoded"] = decoded
+        stats[f"326query_{platform.replace('-', '_')}_broken"] = broken
+        stats[f"326query_{platform.replace('-', '_')}_wrong_format"] = wrong_format
+        stats[f"326query_{platform.replace('-', '_')}_wrong_dims"] = wrong_dims
+        stats[f"326query_{platform.replace('-', '_')}_dim_counts"] = {str(k): v for k, v in dim_counts.items()}
+
+        if not os.path.isfile(gallery_path):
+            fail(f"data/326-query/{platform}/gallery.html: missing")
+            continue
+        with open(gallery_path, encoding="utf-8") as f:
+            gallery_html = f.read()
+
+        external_patterns = [
+            r'src=["\']https?://', r'href=["\']https?://(?!.*creativecommons)',
+            r'<script[^>]+src=["\']https?://', r'@import\s+url\(["\']?https?://',
+            r'fonts\.googleapis\.com', r'cdn\.',
+        ]
+        for pat in external_patterns:
+            m = re.search(pat, gallery_html, re.IGNORECASE)
+            if m:
+                fail(f"data/326-query/{platform}/gallery.html: external reference found matching "
+                     f"/{pat}/: {m.group(0)[:80]!r}")
+
+        img_srcs = re.findall(r'<img[^>]+src=["\']([^"\']+)["\']', gallery_html)
+        missing_refs = 0
+        for src in img_srcs:
+            resolved = os.path.normpath(os.path.join(rel_dir, src))
             if not os.path.isfile(resolved):
-                fail(f"{fn}: references an image file that does not exist: {ref} "
-                     f"(326-query must not claim cross-platform images it doesn't have)")
+                missing_refs += 1
+                fail(f"data/326-query/{platform}/gallery.html: broken image reference {src!r}")
+        stats[f"326query_{platform.replace('-', '_')}_gallery_img_tags"] = len(img_srcs)
+        stats[f"326query_{platform.replace('-', '_')}_gallery_broken_refs"] = missing_refs
+
+        scan_text_for_sensitive(gallery_path, gallery_html)
 
 
 def check_repo_wide_sensitive_and_external():
@@ -330,7 +403,7 @@ def check_repo_wide_sensitive_and_external():
 def main():
     check_68query_images()
     check_gallery_html()
-    check_326_no_image_claims()
+    check_326query_images()
     check_repo_wide_sensitive_and_external()
 
     # 68/326 query counts, for the summary block
