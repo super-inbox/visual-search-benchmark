@@ -96,15 +96,18 @@ This is visual evidence only; no relevance judgment, score, or ranking was gener
   bypassed — see `data/326-query/google-images/README.md`).
 - **Curify:** captured 2026-08-02/03 via Playwright/Chromium (headed, non-persistent context),
   `curify-ai.com/search?q=<query>`, 1440x900 JPEG, one first-viewport screenshot per query.
-  319/326 are standard search-results pages. The remaining 7 (`character`, `logo`, `flyer`,
-  `flashcard`, `地图`, `map`, `vocabulary card`) trigger a deterministic client-side redirect in
-  Curify's own frontend from `/search?q=...` to a generic `/topics/<name>` category page — this is
-  real product routing behavior, not a collection failure, and not something the collector blocked,
-  intercepted, or worked around. The screenshot for each of these 7 captures the actual `/topics/...`
-  page Curify shows for that query; each is explicitly marked `page_type=topic_redirect` in
-  `data/326-query/curify/manifest.csv`, not conflated with the 319 standard search-results captures.
-  See `data/326-query/curify/README.md` for the per-query redirect targets and any capture
-  exceptions.
+  Capture method: 319 original automated captures (2026-08-02) plus 7 automated-retry captures
+  (2026-08-03) for the topic-redirect queries below — see `data/326-query/curify/manifest.csv`'s
+  `capture_method` field. Final page types, of the 326 total: 318 are standard search-results pages;
+  1 (`V078`, "bobblehead") is a genuine zero-result page — a real product response, not a technical
+  failure; and 7 (`character`, `logo`, `flyer`, `flashcard`, `地图`, `map`, `vocabulary card`)
+  trigger a deterministic client-side redirect in Curify's own frontend from `/search?q=...` to a
+  generic `/topics/<name>` category page — this is real product routing behavior, not a collection
+  failure, and not something the collector blocked, intercepted, or worked around. The screenshot
+  for each of these 7 captures the actual `/topics/...` page Curify shows for that query; each is
+  explicitly marked `page_type=topic_redirect` in `data/326-query/curify/manifest.csv`, not
+  conflated with the 318 standard search-results captures. See `data/326-query/curify/README.md`
+  for the per-query redirect targets and any capture exceptions.
 
 ## Why the two benchmarks are not merged
 

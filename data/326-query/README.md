@@ -59,11 +59,12 @@ As of this update, real, unedited search-results screenshots exist for **all 326
 search surfaces:
 
 - **Google Images** — [`google-images/`](google-images/README.md), 326/326, captured 2026-08-01/02.
-- **Curify** (`curify-ai.com`) — [`curify/`](curify/README.md), 326/326, captured 2026-08-02/03. 319
-  are standard `/search?q=...` results pages; 7 are Curify's own deterministic client-side redirect
-  to a `/topics/...` category page for certain single generic words (e.g. "logo", "map") — captured
-  as real evidence of that actual product behavior, not worked around. See `curify/README.md` for
-  the full list and how each is marked.
+- **Curify** (`curify-ai.com`) — [`curify/`](curify/README.md), 326/326, captured 2026-08-02/03. 318
+  are standard `/search?q=...` results pages; 1 (`V078`, "bobblehead") is a genuine zero-result page
+  — a real Curify product response, not a technical failure, and counted as valid evidence; 7 are
+  Curify's own deterministic client-side redirect to a `/topics/...` category page for certain single
+  generic words (e.g. "logo", "map") — captured as real evidence of that actual product behavior, not
+  blocked or modified. See `curify/README.md` for the full list and how each is marked.
 
 **This is screenshot evidence, not a new evaluation.** No relevance judgment, score, or ranking was
 generated for either platform — `evaluations.csv` still scores Curify only (production baseline vs.

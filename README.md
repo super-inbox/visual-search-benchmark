@@ -123,7 +123,7 @@ the licensing status of the third-party screenshots (not CC BY 4.0 — see below
 
 **The 326-query benchmark now has real screenshot evidence for all 326 queries**, on two search
 surfaces: [`data/326-query/google-images/`](data/326-query/google-images/) (326/326, Google
-Images) and [`data/326-query/curify/`](data/326-query/curify/) (326/326, Curify — 319 standard
+Images) and [`data/326-query/curify/`](data/326-query/curify/) (326/326, Curify — 318 standard
 search-results pages, 1 genuine zero-result page, and 7 real captures of Curify's own deterministic
 topic-category redirect for certain generic single-word queries, each explicitly tagged
 `page_type=topic_redirect` and never presented as a standard search-results page). Browse them at
