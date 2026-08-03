@@ -8,14 +8,18 @@ evaluation labels, manifests, and code authored by Curify for this repository (e
 to share and adapt that material for any purpose, even commercially, as long as you give
 appropriate credit to Curify (https://curify-ai.com) and indicate if changes were made.
 
-**CC BY 4.0 does NOT apply to the third-party screenshot images in `data/68-query/images/`.**
-Those 62 files are screenshots of search-result pages from Bing, Google, Canva, and Pinterest (plus
-Curify's own product), included solely as benchmark evidence under a fair-use/evaluation rationale.
-Copyright in the underlying page designs, product photography, and any depicted content remains
-with its original rights holders (the respective platforms and/or the creators of the depicted
-content) — it is not relicensed, and this repository does not grant any license to reuse, retrain
-on, resell, or redistribute those images outside of citing/discussing this benchmark. See
-`docs/IMAGE_RIGHTS_AND_ATTRIBUTION_REVIEW.md` for the full rationale and limitations.
+**CC BY 4.0 does NOT apply to the third-party screenshot images in `data/68-query/images/` or
+`data/326-query/google-images/`.** The 62 files in `data/68-query/images/` are screenshots of
+search-result pages from Bing, Google, Canva, and Pinterest (plus Curify's own product); the 326
+files in `data/326-query/google-images/` are Google Images search-result screenshots. Both are
+included solely as benchmark evidence under a fair-use/evaluation rationale. Copyright in the
+underlying page designs, product photography, and any depicted content remains with its original
+rights holders (the respective platforms and/or the creators of the depicted content) — it is not
+relicensed, and this repository does not grant any license to reuse, retrain on, resell, or
+redistribute those images outside of citing/discussing this benchmark. See
+`docs/IMAGE_RIGHTS_AND_ATTRIBUTION_REVIEW.md` for the full rationale and limitations. The 326
+Curify screenshots in `data/326-query/curify/` are Curify's own product UI and content, and remain
+under the general CC BY 4.0 terms above like the Curify screenshots in `data/68-query/images/`.
 
 Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
 Human-readable summary: https://creativecommons.org/licenses/by/4.0/

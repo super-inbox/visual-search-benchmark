@@ -8,7 +8,8 @@ Two Curify-internal search-evaluation datasets, converted for public release:
   plus real cross-platform screenshot evidence (Curify/Bing/Google/Canva/Pinterest) for 12 of the
   68 queries.
 - **326-query benchmark** — 326 queries used to regression-test two code states of Curify's own
-  search-relevance pipeline. No cross-platform data of any kind.
+  search-relevance pipeline, plus real (unscored) Google Images and Curify search-results
+  screenshot evidence for all 326 queries.
 
 They are published together because they came from the same internal search-quality effort, but
 they are **not a single unified benchmark** — different query sets, different systems under test,
@@ -37,7 +38,9 @@ standard visual-search benchmark; treating any label here as human-reviewed grou
 ```
 data/68-query/    queries.csv, automated_relevance_labels.csv, schema.json, provenance.json,
                   results.jsonl, image_manifest.json, IMAGE_MAPPING_REPORT.md, images/, gallery/
-data/326-query/   queries.csv, evaluations.csv, schema.json, provenance.json
+data/326-query/   queries.csv, evaluations.csv, schema.json, provenance.json,
+                  google-images/ (326 screenshots + manifest + gallery),
+                  curify/ (326 screenshots + manifest + gallery)
 ```
 
 ### Data instances
@@ -49,6 +52,9 @@ result plus an LLM relevance label.
 mapping-confidence and evaluation fields — see field list below.
 **326-query, `evaluations.csv` row:** one query x one run_variant (production baseline or candidate
 branch) evaluation result.
+**326-query, `google-images/manifest.csv` row / `curify/manifest.csv` row:** one query's screenshot
+collection record (URL, screenshot path, status, timing) for that search surface — unscored
+evidence, not an evaluation result.
 
 ### Data fields
 
@@ -102,7 +108,10 @@ posts, marketplace listings, social posts) as it appeared in search results at c
 private accounts, login credentials, cookies, or personal data were knowingly captured, and image
 files were scanned for local absolute paths, tokens, and credential-shaped strings before
 publication (see `SOURCE_AUDIT.md` and `docs/68_IMAGE_SOURCE_INVENTORY.md` section 7 — no matches
-found in the published image set).
+found in the published image set). The 652 (326x2) screenshots added 2026-08-03 in
+`data/326-query/google-images/` and `data/326-query/curify/` were scanned the same way (repo-wide
+sweep in `scripts/validate_benchmark.py`) — no local paths, tokens, cookies, or consent/CAPTCHA
+pages were retained in the published evidence.
 
 ## Considerations for using the data
 
@@ -123,11 +132,17 @@ See root `README.md` section 12 and each dataset's own `README.md`.
 - The 50 third-party platform screenshots (Bing/Google/Canva/Pinterest) in
   `data/68-query/images/`: **not CC BY 4.0** — evidence-only inclusion, rights remain with original
   holders. See `docs/IMAGE_RIGHTS_AND_ATTRIBUTION_REVIEW.md`.
+- The 326 Google Images screenshots in `data/326-query/google-images/`: **not CC BY 4.0**, same
+  rationale as above — third-party search-results content, evidence-only inclusion, rights remain
+  with the original page/image owners shown in each result.
+- The 326 Curify screenshots in `data/326-query/curify/`: Curify's own product UI and search
+  results, included under the same **CC BY 4.0** terms as the rest of this repository.
 
 ## Additional information
 
 - **Dataset curators:** Curify (internal search-quality team).
 - **Citation:** `CITATION.cff`.
-- **Version:** `1.1.0`, released 2026-07-31 (68-query image evidence added; original data release
-  was `1.0.0`, 2026-07-30).
+- **Version:** `1.2.0`, released 2026-08-03 (326-query Google Images + Curify screenshot evidence
+  added, 326/326 coverage each; `evaluations.csv`/`queries.csv` unchanged). Previous: `1.1.0`,
+  2026-07-31 (68-query image evidence added); original data release was `1.0.0`, 2026-07-30.
 - **Contact/issues:** open a GitHub issue on this repository; see `README.md` "Contributing."

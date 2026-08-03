@@ -150,7 +150,7 @@ cross-platform image evidence exists for only 12 of the 68 queries (not all 68, 
 candidate branch was not approved for production at capture time; all data is a point-in-time
 snapshot.
 
-## Overall result
+## Overall result (`v1.1.0`, 68-query image evidence)
 
 - `python3 scripts/validate_data.py` -> **PASS** (exit code 0)
 - `python3 scripts/validate_benchmark.py` -> **PASS** (exit code 0)
@@ -158,5 +158,114 @@ snapshot.
 - Image hash verification -> 62/62 `published_sha256` match recomputed SHA-256, 0 mismatches
 - Image decode verification -> 62/62 decodable, 0 broken
 - Gallery reference verification -> 62/62 full-image and thumbnail references resolve, 0 broken
+
+**OVERALL: PASS**
+
+## Update: `v1.2.0` (2026-08-03) — 326-query Google Images + Curify screenshot evidence
+
+Adds real, unedited screenshot evidence for all 326 queries on two search surfaces:
+`data/326-query/google-images/` (326/326) and `data/326-query/curify/` (326/326: 318 standard
+search-results pages, 1 genuine zero-result page, 7 verified topic-redirect pages). This is
+evidence only — `queries.csv` and `evaluations.csv` (and their hashes in `provenance.json`) are
+unchanged; the label distributions and referential-integrity results reported above for the
+326-query benchmark still hold as-is.
+
+### Public file list (new since `v1.1.0`)
+
+```
+LICENSE                                          (updated -- 326-query third-party/first-party image scope carve-out)
+CITATION.cff                                     (version bumped 1.1.0 -> 1.2.0)
+README.md                                        (326-query image-evidence sections added)
+METHODOLOGY.md                                   (326-query screenshot-evidence section added)
+SOURCE_AUDIT.md                                  (326-query screenshot-evidence source entry added)
+SIZE_REPORT.md                                   (326-query update section added)
+DATASET_CARD.md                                  (structure, licensing, version updated)
+scripts/validate_data.py                         (326-query manifest checks added, human_spot_check.csv guard added)
+scripts/validate_benchmark.py                    (326-query image/gallery checks replace the old "no images" guard)
+data/README.md                                   (updated)
+data/326-query/README.md                         (image-evidence sections added, "no images" claim removed)
+data/326-query/provenance.json                   (image_evidence block + 2 manifest hashes + limitations updated)
+data/326-query/google-images/                    (new: README.md, manifest.csv, manifest.jsonl, gallery.html, screenshots/ [326 JPEG, ~83 MB])
+data/326-query/curify/                           (new: README.md, manifest.csv, manifest.jsonl, failed_queries.csv, gallery.html, screenshots/ [326 JPEG, ~60 MB])
+```
+
+Unchanged: `data/326-query/queries.csv`, `evaluations.csv`, `schema.json` (field lists for those
+two CSVs); all of `data/68-query/`.
+
+### `scripts/validate_data.py` result
+
+```
+python3 scripts/validate_data.py
+```
+
+**OVERALL: PASS** (exit code 0). New checks exercised: required-file presence for
+`data/326-query/{google-images,curify}/*`, `human_spot_check.csv` absence sweep (repo-wide),
+326/326 row-count and query_id referential-integrity for both new manifests (against
+`queries.csv`), duplicate `query_id` / duplicate `screenshot_path` detection, screenshot-path
+existence and no-local-absolute-path checks, orphan-screenshot detection (files on disk not
+referenced by the manifest), all-rows-`status=success` assertion for both manifests, and
+`curify/failed_queries.csv` header-only (0 data rows) assertion.
+
+### `scripts/validate_benchmark.py` result
+
+```
+python3 scripts/validate_benchmark.py
+```
+
+**OVERALL: PASS** (exit code 0). New stats from this run:
+
+| Metric | google-images | curify |
+|---|---|---|
+| Decoded | 326 | 326 |
+| Broken/undecodable | 0 | 0 |
+| Wrong format (not real JPEG) | 0 | 0 |
+| Wrong dimensions | 0 | 0 |
+| Dimension distribution | `1440x1000`: 326 | `1440x900`: 326 |
+| Gallery `<img>` tags | 326 | 326 |
+| Gallery broken references | 0 | 0 |
+
+Checks performed (new `check_326query_images()`, replacing the old `check_326_no_image_claims()`
+guard that asserted no images could exist): per-file Pillow `verify()` + `load()` decode,
+actual-format-vs-`.jpg`-extension match (catches a PNG-saved-as-`.jpg` mismatch, which is exactly
+what an earlier, superseded manual-capture attempt for 7 Curify queries had — see
+`data/326-query/curify/README.md`), exact-dimension match against each platform's fixed
+viewport/capture size, gallery HTML external-reference scan (no CDN/remote script/font), and
+gallery embedded-`<img src>`-vs-disk cross-check. Sensitive-string scan (`scan_text_for_sensitive`)
+also ran across both new `gallery.html` files and all new manifest/README files as part of the
+existing repo-wide sweep -- clean.
+
+### Manual visual spot-check (this update)
+
+Per the task's own requirement that "file exists" is not the same as "content verified": every
+one of the 7 Curify `topic_redirect` captures was individually opened and visually confirmed (page
+body rendered, results grid present and topically consistent with the query, correct final URL, no
+error/blank/loading page, no browser-chrome-only capture) -- see the table in
+`data/326-query/curify/README.md`. Google Images: first query (V001), last query (V326), one
+Chinese mid-range query (V163), and the smallest-file-size outlier (V290, "whiteboard", checked
+specifically to rule out a blank/near-blank page) were all individually visually confirmed as real,
+correct Google Images results pages -- no consent wall, CAPTCHA, or error page in any of them
+(consistent with `consent_detected=false` / `captcha_detected=false` on all 326 manifest rows).
+
+### Sensitive-data / public-safety scan (this update)
+
+Clean. No local absolute paths, no `human_spot_check.csv`, no cookies/tokens/credential-shaped
+strings in either new screenshot set or its manifests/READMEs/gallery HTML.
+
+### Repo size (this update)
+
+See `SIZE_REPORT.md`. Summary: ~144 MB of new files (652 JPEG screenshots + manifests + galleries
++ docs), largest individual file 398 KB -- far under GitHub's 50 MB/100 MB thresholds, no LFS
+required.
+
+### Overall result (`v1.2.0`)
+
+- `python3 scripts/validate_data.py` -> **PASS** (exit code 0)
+- `python3 scripts/validate_benchmark.py` -> **PASS** (exit code 0)
+- 326-query Google Images evidence -> 326/326, all decodable, all `1440x1000` real JPEG, 0 broken
+  gallery references
+- 326-query Curify evidence -> 326/326, all decodable, all `1440x900` real JPEG, 0 broken gallery
+  references, 7 explicitly-labeled `topic_redirect` pages individually visually verified
+- `human_spot_check.csv` -> absent repo-wide, confirmed
+- Sensitive-data scan -> clean
 
 **OVERALL: PASS**

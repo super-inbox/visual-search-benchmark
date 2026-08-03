@@ -88,6 +88,31 @@ invented) — confirmed nonzero in the runs selected here (12 in the baseline, 7
 against the 2026-07-22 candidate run's automated label. It is **not included in this public
 release**; no counts, verdicts, or file hash from it are published here.
 
+**Screenshot evidence (Google Images + Curify, added after the original `v1.0.0`/`v1.1.0`
+release).** Both collections were run directly against the same authoritative `queries.csv`
+(SHA-256 `d8ae0f4ef77567b4dcf8f15635b11c140810c3b991a8134a99997e11ad6a1d9e`) via local Playwright
+browser-automation runs, independent of the 2026-07-21/22 `evaluations.csv` runs above:
+
+- **Google Images** — 326/326 queries, 1440x1000 JPEG, captured 2026-08-01/02. Zero CAPTCHA or
+  unresolved consent walls in the published evidence. `manifest.csv`/`manifest.jsonl` published
+  verbatim (326 rows each) alongside the 326 screenshots.
+- **Curify** — 326/326 queries, 1440x900 JPEG, captured 2026-08-02/03. 319 are standard
+  `/search?q=...` results pages, collected in one run. The other 7 queries (`character`, `logo`,
+  `flyer`, `flashcard`, `地图`, `map`, `vocabulary card`) were found, on the first collection pass,
+  to trigger a deterministic client-side redirect in Curify's own frontend away from `/search?q=...`
+  to a `/topics/<name>` category page — correctly recorded as `status=failed` /
+  `error_type=navigation_error` by the strict collector rather than silently accepted as a false
+  match (one earlier record, `V084` "logo", was caught and corrected mid-run for exactly this
+  failure mode — see `data/326-query/curify/README.md`). A second, targeted automated pass then
+  captured the actual `/topics/...` page each of those 7 queries redirects to, as real evidence of
+  that product behavior — not a workaround, bypass, or forced route. All 7 are marked
+  `page_type=topic_redirect` and `capture_method=automated_retry` in the published manifest,
+  distinct from the 319 `capture_method=automated` standard-search records. See
+  `data/326-query/curify/README.md` for the full per-query breakdown, including any residual
+  capture exceptions.
+- Neither collection generated a relevance judgment, score, or ranking; `evaluations.csv` was not
+  re-run, re-scored, or otherwise modified for this addition.
+
 ## Sensitive-data findings and handling
 
 - Internal run manifests (not published) referenced local absolute filesystem paths, an internal

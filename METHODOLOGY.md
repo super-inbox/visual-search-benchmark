@@ -83,6 +83,29 @@ from the LLM-judge evaluation above. **It is not included in this public release
 verdicts, counts, or related file are published here. `relevance_label`/`relevance_score` in
 `evaluations.csv` are LLM-judge output only.
 
+**Screenshot evidence (added after the original `v1.0.0`/`v1.1.0` release, not part of
+`evaluations.csv`):** real, unedited search-results screenshots for all 326 queries on two search
+surfaces — Google Images (`data/326-query/google-images/`) and Curify (`data/326-query/curify/`).
+This is visual evidence only; no relevance judgment, score, or ranking was generated from it, and
+`evaluations.csv` was not re-run or altered.
+
+- **Google Images:** captured 2026-08-01/02 via Playwright/Chromium (headed, persistent profile),
+  `google.com/search?tbm=isch&q=<query>&hl=en`, 1440x1000 JPEG, one first-viewport screenshot per
+  query. 326/326 succeeded; zero CAPTCHA or unresolved consent walls in the final evidence (a small
+  number of transient network/timeout errors during collection were resolved by retry, never
+  bypassed — see `data/326-query/google-images/README.md`).
+- **Curify:** captured 2026-08-02/03 via Playwright/Chromium (headed, non-persistent context),
+  `curify-ai.com/search?q=<query>`, 1440x900 JPEG, one first-viewport screenshot per query.
+  319/326 are standard search-results pages. The remaining 7 (`character`, `logo`, `flyer`,
+  `flashcard`, `地图`, `map`, `vocabulary card`) trigger a deterministic client-side redirect in
+  Curify's own frontend from `/search?q=...` to a generic `/topics/<name>` category page — this is
+  real product routing behavior, not a collection failure, and not something the collector blocked,
+  intercepted, or worked around. The screenshot for each of these 7 captures the actual `/topics/...`
+  page Curify shows for that query; each is explicitly marked `page_type=topic_redirect` in
+  `data/326-query/curify/manifest.csv`, not conflated with the 319 standard search-results captures.
+  See `data/326-query/curify/README.md` for the per-query redirect targets and any capture
+  exceptions.
+
 ## Why the two benchmarks are not merged
 
 The 68-query and 326-query datasets differ in query set, system(s) compared, label vocabulary

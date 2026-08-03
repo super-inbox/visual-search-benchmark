@@ -62,3 +62,29 @@ growing one, but it's worth the user's awareness before committing.
 None of these were applied. Thumbnails were generated (as instructed) without touching the
 originals; no compression, cropping, LFS migration, or external re-hosting was performed
 automatically.
+
+## Update: 326-query Google Images + Curify screenshot evidence
+
+Generated 2026-08-03 alongside the addition of `data/326-query/google-images/` and
+`data/326-query/curify/` (real screenshot evidence for all 326 queries on two search surfaces).
+
+| Item | Size (measured) | File count |
+|---|---|---|
+| `data/326-query/google-images/screenshots/` (326 JPEG, 1440x1000) | 83 MB | 326 |
+| `data/326-query/google-images/manifest.csv` + `manifest.jsonl` + `gallery.html` | ~430 KB combined | 3 |
+| `data/326-query/curify/screenshots/` (326 JPEG, 1440x900) | 60 MB | 326 |
+| `data/326-query/curify/manifest.csv` + `manifest.jsonl` + `failed_queries.csv` + `gallery.html` | ~380 KB combined | 4 |
+| New/updated docs (READMEs, `METHODOLOGY.md`, `SOURCE_AUDIT.md`, etc.) | < 100 KB combined | ~10 |
+| **Total new working-tree size added this update** | **~144 MB** | **~660 files** |
+
+Largest individual new file: `data/326-query/google-images/screenshots/V081__query.jpg` at
+398 KB. No individual screenshot in either new directory comes close to GitHub's 50 MB
+soft-warning threshold or 100 MB hard limit — every JPEG is a single first-viewport capture (not
+full-page), typically 150-400 KB. No Git LFS requirement is triggered by file size alone.
+
+Combined with the existing `data/68-query/images/` (~158 MB), total `data/` working-tree size is
+now approximately 305 MB (excluding `.git` history). This remains well within GitHub's own soft
+guidance (~1 GB) for a repository of this kind; the same one-time-cost reasoning as the `v1.1.0`
+update above applies — these are original evidence images that should never be edited in place, so
+this is a one-time addition to history, not an ongoing growth pattern. No LFS, external hosting, or
+lossy re-encoding of the originals was applied.
