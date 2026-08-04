@@ -4,8 +4,9 @@ Two curated internal evaluation datasets from [Curify](https://curify-ai.com), c
 release: a 68-query gold set evaluating Curify's own search relevance — now including real,
 browsable cross-platform screenshot evidence for 12 of the 68 queries — and a 326-query regression
 benchmark comparing two states of Curify's search-relevance pipeline. This benchmark combines
-real-world creative-search queries with cross-platform visual evidence (where it exists), human/LLM
-relevance judgments, and query-level failure analysis — not just a query list and a final score.
+real-world creative-search queries with cross-platform visual evidence (where it exists), LLM-judged
+relevance data, with human-review status documented explicitly, and query-level failure analysis —
+not just a query list and a final score.
 
 > **Status:** `v1.2.0`. See [`METHODOLOGY.md`](METHODOLOGY.md) for how each benchmark was built,
 > [`SOURCE_AUDIT.md`](SOURCE_AUDIT.md) for source provenance and hashes, and
@@ -30,8 +31,9 @@ scores with no way to see *what actually happened*. This release instead ties to
 source data allows it: the literal query text, which platform was searched, what the platform
 actually returned (as a real screenshot, not a description), and a relevance judgment — so a reader
 can see a failure, not just a number. It also documents, deliberately, where that chain is
-incomplete (56 of 68 queries with no image evidence; the entire 326-query set with no cross-platform
-data at all) rather than smoothing that over.
+incomplete (56 of 68 queries with no image evidence; the 326-query scored evaluation has no
+cross-platform relevance judgments, although unscored Google Images and Curify screenshot evidence
+is available for all 326 queries) rather than smoothing that over.
 
 ## 3. What makes this dataset different
 
@@ -66,9 +68,8 @@ for why, and each dataset's own `data/*/README.md` for details.
 ## 5. 68-query vs. 326-query
 
 **68-query** is the deep-evidence set: fewer queries, but for a 12-query subset you can see the
-literal screenshots across five platforms plus a stated reason for each judgment. Positioning: *a
-human/LLM-audited cross-platform visual search benchmark with actual ranked-page visual evidence
-(where captured).*
+literal screenshots across five platforms plus a stated reason for each judgment. Positioning: *an
+LLM-audited visual-search benchmark with cross-platform screenshot evidence (where captured).*
 
 **326-query** is the broad-coverage set: 326 queries across four scenarios in two languages, run
 through two code states of the same search pipeline, for regression/coverage testing — plus real

@@ -7,5 +7,6 @@ authors:
 url: "https://curify-ai.com/resources/visual-search-benchmark"
 repository-code: "https://github.com/super-inbox/visual-search-benchmark"
 license: CC-BY-4.0
+abstract: "CC BY 4.0 applies to Curify-authored dataset materials (queries, schemas, evaluation labels, provenance docs, and code). Third-party platform screenshots are excluded from this license; see LICENSE."
 version: "1.2.0"
 date-released: "2026-08-03"
