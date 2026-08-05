@@ -139,16 +139,19 @@ The 62 newly-published images and their `notes.md`-derived text were separately 
 ## Repo size
 
 See `SIZE_REPORT.md`. Summary: ~158 MB of new image files (62 PNGs), ~2.6 MB of new thumbnails (62
-JPEGs). No single file exceeds GitHub's 100 MB hard limit; several individual PNGs exceed GitHub's
-50 MB soft-warning threshold. No file was compressed, cropped, or otherwise degraded to reduce size.
+JPEGs). No individual file exceeds GitHub's 50 MB soft-warning threshold or its 100 MB hard limit;
+the largest published image is approximately 7.4 MB. No file was compressed, cropped, or otherwise
+degraded to reduce size.
 
 ## Known limitations
 
 See each dataset's `README.md`, `DATASET_CARD.md`, and the root `METHODOLOGY.md`. In summary:
 cross-platform image evidence exists for only 12 of the 68 queries (not all 68, and not at all for
-326-query); neither benchmark includes completed human review in this release; the 326-query
-candidate branch was not approved for production at capture time; all data is a point-in-time
-snapshot.
+326-query as of this `v1.1.0` snapshot — this limitation was superseded for the 326-query screenshot
+evidence by the `v1.2.0` update below, which added unscored Google Images and Curify screenshot
+evidence for all 326 queries); neither benchmark includes completed human review in this release;
+the 326-query candidate branch was not approved for production at capture time; all data is a
+point-in-time snapshot.
 
 ## Overall result (`v1.1.0`, 68-query image evidence)
 

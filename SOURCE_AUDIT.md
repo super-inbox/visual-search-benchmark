@@ -96,8 +96,9 @@ browser-automation runs, independent of the 2026-07-21/22 `evaluations.csv` runs
 - **Google Images** — 326/326 queries, 1440x1000 JPEG, captured 2026-08-01/02. Zero CAPTCHA or
   unresolved consent walls in the published evidence. `manifest.csv`/`manifest.jsonl` published
   verbatim (326 rows each) alongside the 326 screenshots.
-- **Curify** — 326/326 queries, 1440x900 JPEG, captured 2026-08-02/03. 319 are standard
-  `/search?q=...` results pages, collected in one run. The other 7 queries (`character`, `logo`,
+- **Curify** — 326/326 queries, 1440x900 JPEG, captured 2026-08-02/03. 318 are standard
+  `/search?q=...` results pages and 1 (`V078`, "bobblehead") is a genuine zero-result page — a real
+  product response, not a technical failure — both collected in the same run. The other 7 queries (`character`, `logo`,
   `flyer`, `flashcard`, `地图`, `map`, `vocabulary card`) were found, on the first collection pass,
   to trigger a deterministic client-side redirect in Curify's own frontend away from `/search?q=...`
   to a `/topics/<name>` category page — correctly recorded as `status=failed` /
@@ -107,7 +108,8 @@ browser-automation runs, independent of the 2026-07-21/22 `evaluations.csv` runs
   captured the actual `/topics/...` page each of those 7 queries redirects to, as real evidence of
   that product behavior — not a workaround, bypass, or forced route. All 7 are marked
   `page_type=topic_redirect` and `capture_method=automated_retry` in the published manifest,
-  distinct from the 319 `capture_method=automated` standard-search records. See
+  distinct from the 319 `capture_method=automated` records (318 standard search-results + 1 genuine
+  zero-result). See
   `data/326-query/curify/README.md` for the full per-query breakdown, including any residual
   capture exceptions.
 - Neither collection generated a relevance judgment, score, or ranking; `evaluations.csv` was not

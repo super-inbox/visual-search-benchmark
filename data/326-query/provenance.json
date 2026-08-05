@@ -41,7 +41,9 @@
     "curify": {
       "query_count": 326,
       "coverage": "326/326 (319 automated + 7 automated_retry)",
-      "captured": "2026-08-02 (319 standard + 1 zero-result) and 2026-08-03 (7 topic-redirect retry)",
+      "capture_method_counts": {"automated": 319, "automated_retry": 7},
+      "page_type_counts": {"search_results": 318, "search_zero_results": 1, "topic_redirect": 7},
+      "captured": "2026-08-02 (318 search_results + 1 search_zero_results, both capture_method=automated) and 2026-08-03 (7 topic_redirect, capture_method=automated_retry)",
       "collector_versions": ["curify-326-local-v1.0.0", "curify-326-topic-redirect-retry-v1.0.0"],
       "format": "JPEG, 1440x900, quality 80",
       "topic_redirect_query_ids": ["V012", "V084", "V168", "V248", "V253", "V254", "V300"],
